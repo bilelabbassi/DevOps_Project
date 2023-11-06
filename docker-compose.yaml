@@ -1,0 +1,26 @@
+version: "3"
+services:
+  springboot-app:
+    # container_name: spring-app
+    image: kaddemproject:v1
+    restart: always
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_PORT: 3306
+      SPRING_PROFILES_ACTIVE: prod
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    volumes:
+      -  /home/mysql/data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: kaddemdatabase
+      MYSQL_ROOT_PASSWORD: root

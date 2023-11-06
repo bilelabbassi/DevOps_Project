@@ -1,0 +1,60 @@
+pipeline {
+    agent {label "agent1"} 
+    tools {
+    maven 'mvn'
+    dockerTool 'dockerlatest'
+}
+    stages {
+        stage('clone') { 
+            steps {
+               git branch: 'bilel', credentialsId: 'credgit2', url: 'https://github.com/yedeshamda/DevOps_Project.git'
+            }
+        }
+        stage('mvn install') { 
+            
+            steps {
+               
+                sh 'mvn install -Pprod '
+            }
+        }
+        stage('docker compose build') { 
+            steps {
+              sh 'docker-compose up -d'
+            }
+        }
+        
+        stage('test'){
+            
+            steps{
+                 
+            sh 'mvn clean test -Ptest'
+           }
+        }
+    
+        stage('sonrqube'){
+            
+            steps{
+                 
+            sh 'mvn verify sonar:sonar -Dsonar.token=squ_2bf0569c11b5a5c1bda258d297e0bf87cf9fd816'
+        }
+        }
+        /*stage('deploy artifact to nexus') { 
+            steps {
+              sh ' mvn deploy -DskipTests'
+            }
+        }*/
+        
+       
+         
+        
+        stage('Uploading image docker to Nexus') {
+            steps {
+                    sh 'docker login localhost:8085 -u admin -p bilel'
+                    sh ' docker tag kaddem:v1 localhost:8085/projet_devops/kaddem:v3'
+                    sh ' docker push localhost:8085/projet_devops/kaddem:v3'
+
+            }
+        }
+        
+    }
+}
